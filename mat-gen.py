@@ -77,24 +77,40 @@ def gen_mat_mul( r, m, v, tr='T' ):
 def setup_pwm( t, n, v, rev=False ):
     if rev:
         v = [*reversed(v)]
+    n = (n+6*len(t))%len(t)
     for i in range(len(v)):
         print('{} = ({});'.format(t[i], v[(i+n)%len(t)]))
 
-def setup_sin( n ):
+def var( n, v ):
+    print( 'T {} = ({});'.format(n, v) )
+
+def setup_sin( a ):
     A = 90
-    sc = sqrt(T(3))
-    p = n%2
-    n //= 2
-    if p:
-        sc = -sc
-        n -= 1
-    print('x', sc)
-    setup_pwm(['R1', 'R2', 'R3'], n, [0, coss(A+60), coss(A-60) ])
+    sc = sqrt(T(3))*T(0.5)
+    print( 'auto cs = sincos({});'.format( a ) )
+    var( 'sc', sc )
+    var( 'scm', -sc )
+    var( 'ca', scale_var( sqrt(T(3)), 'cs.cos' ) )
+    var( 'sa', 'cs.sin' )
+    print( 'switch( n ) {' )
+    for n in range( 6 ):
+        print( 'case {}:{{'.format( n ) )
+        p = n%2
+        n //= 2
+        if p:
+            m, mn = 'scm', 'sc'
+            n -= 1
+        else:
+            m, mn = 'sc', 'scm'
+        setup_pwm(['R1', 'R2', 'R3'], n,
+                [0, scale_var(mn, 'sa+ca'), scale_var(m, 'sa-ca') ])
+        print('}break;')
+    print('}')
 
 #gen_mat_mul( 'r', M_3F, [*zip(rot_v(pi/6))] )
 #print( matmul(rot_m(pi/2),[1, 1]) )
 
-setup_pwm( ['R1', 'R2', 'R3'], 0, ['v1', 'v2', 0] )
+#setup_pwm( ['R1', 'R2', 'R3'], 0, ['v1', 'v2', 0] )
 
 #print('aaaaaaa')
 #for i in range( 6 ):
@@ -102,7 +118,5 @@ setup_pwm( ['R1', 'R2', 'R3'], 0, ['v1', 'v2', 0] )
 
 # for i in [0, 60, 120, 180, 240, 300, 360]:
     # print( '{} {}'.format( coss(i), coss(i+120) ) )
-for i in range( 6 ):
-    setup_sin(i)
-    print('')
+setup_sin( 'a' )
 

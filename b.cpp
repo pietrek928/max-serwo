@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <iostream>
 
 using namespace std;
 
@@ -21,8 +21,22 @@ auto sincos( T x ) {
     return r;
 }
 
+#define T double
+
 int main() {
-    printf("%d\n",sizeof(a));
+    double a = 0;
+    int n = 0;
+    for ( int i=0; i<100; i++ ) {
+    a += 0.01*2*3.1415;
+    if ( a > 3.1415/6 ) {
+        a -= 3.1415/3 ;
+        n++;
+    }
+    double R1, R2, R3;
+#include "tst.h"
+    cout << a << " " << R1-R2 << " " << R2-R3 << " " << R3-R1 << endl;
+    //cout << a << " " << R1 << " " << R2 << " " << R3 << endl;
+    }
     return 0;
 }
 
