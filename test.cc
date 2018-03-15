@@ -24,7 +24,7 @@ auto sincos( T x ) {
 
 #define T double
 
-int main() {
+int main(int argc, char *argv[]) {
     double a = 0;
     double t = 0;
     int n = 0;
@@ -38,10 +38,18 @@ int main() {
     }
     double R1, R2, R3;
 #include "tst.h"
-    cout << t << "," << R1-R2 << "," << R2-R3 << "," << R3-R1 << endl;
-    //cout << t << "," << R1 << "," << R2 << "," << R3 << endl;
-    //cout << t << "," << R1 << "," << R2 << "," << R3 << endl;
-    //cout << t << "," << R1+R1+R2 << endl;
+    if (argc>=2)
+    switch(argv[1][0]) {
+        case '1':
+            cout << t << "," << R1-R2 << "," << R2-R3 << "," << R3-R1 << endl;
+            break;
+        case '2':
+            cout << t << "," << R1 << "," << R2 << "," << R3 << endl;
+            break;
+        case '3':
+            cout << t << "," << R1+R2+R3 << endl;
+            break;
+    }
     }
     return 0;
 }

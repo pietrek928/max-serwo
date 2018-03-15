@@ -54,11 +54,20 @@ ppc: Makefile main.cc
 	vim a.h
 
 clean:
-	rm -rf main.hex main.s main.elf test.e test.csv ./periph_gen ./init_gen ./startup.o init.h periph.h lrtos.h a.h 2> /dev/null
+	rm -rf main.hex main.s main.elf test.e test.csv ./periph_gen ./init_gen ./startup.o init.h periph.h lrtos.h a.h tst.h test*.csv test.e 2> /dev/null
 
-test: test.cc
+tst.h:
+	python mat-gen.py > tst.h
+
+test.e: test.cc tst.h
 	g++ test.cc -std=c++14 -O2 -o test.e
-	./test.e > test.csv
-	python display.py
+
+test: test.e
+	./test.e 1 > test1.csv
+	./test.e 2 > test2.csv
+	./test.e 3 > test3.csv
+	python display.py test1
+	python display.py test2
+	python display.py test3
 
 
