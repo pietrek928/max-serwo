@@ -12,7 +12,7 @@ startup_file=startup_stm32f40xx
 CPU=cortex-m4
 FPU=fpv4-sp-d16
 MCU=STM32F401xC
-#FPU_OPT= -mfpu=${FPU} -mfloat-abi=hard
+FPU_OPT= -mfpu=${FPU} -mfloat-abi=hard
 
 CONFIG= -D${MCU} -DDEBUG -DF_CPU=${F_CPU} -DF_SYSCLK=${F_SYSCLK}
 CFLAGS= -Os -s -mcpu=${CPU} -mlittle-endian -mthumb ${FPU_OPT} --specs=nosys.specs -fmax-errors=3 -Wno-attributes
@@ -32,8 +32,8 @@ startup.o: config/${startup_file}.s
 	${GCC} ${CFLAGS} -c config/${startup_file}.s -o startup.o
 
 
-main.hex: Makefile main.cpp startup.o
-	${GCC} ${CFLAGS} ${LINKER_RES} main.cpp -o main.elf ${INCLUDE} ${CONFIG}
+main.hex: Makefile main.cc startup.o
+	${GCC} ${CFLAGS} ${LINKER_RES} main.cc -o main.elf ${INCLUDE} ${CONFIG}
 	${SIZE} main.elf
 	${OBJCOPY} -Oihex main.elf main.hex
 	#cp main.hex /home/pietrek/shared/
@@ -45,15 +45,20 @@ debug: main.hex
 	./run.sh
 	${GDB} -x config/.gdbinit
 
-asm: Makefile main.cpp startup.o
-	${GCC} -S ${CFLAGS} ${LINKER_RES} main.cpp -o main.s ${INCLUDE} ${CONFIG}
+asm: Makefile main.cc startup.o
+	${GCC} -S ${CFLAGS} ${LINKER_RES} main.cc -o main.s ${INCLUDE} ${CONFIG}
 	vim main.s
 
-ppc: Makefile main.cpp
-	${GCC} -E ${CFLAGS} ${LINKER_RES} main.cpp -o a.h ${INCLUDE} ${CONFIG}
+ppc: Makefile main.cc
+	${GCC} -E ${CFLAGS} ${LINKER_RES} main.cc -o a.h ${INCLUDE} ${CONFIG}
 	vim a.h
 
 clean:
-	rm -rf main.hex main.s main.elf ./periph_gen ./init_gen ./startup.o init.h periph.h lrtos.h a.h 2> /dev/null
+	rm -rf main.hex main.s main.elf test.e test.csv ./periph_gen ./init_gen ./startup.o init.h periph.h lrtos.h a.h 2> /dev/null
+
+test: test.cc
+	g++ test.cc -std=c++14 -O2 -o test.e
+	./test.e > test.csv
+	python display.py
 
 

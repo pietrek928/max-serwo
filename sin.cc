@@ -1,7 +1,3 @@
-#include <iostream>
-
-using namespace std;
-
 template<class T>
 auto sincos( T x ) {
     T xx = x*x;
@@ -21,22 +17,18 @@ auto sincos( T x ) {
     return r;
 }
 
-#define T double
-
-int main() {
-    double a = 0;
-    int n = 0;
-    for ( int i=0; i<100; i++ ) {
-    a += 0.01*2*3.1415;
+volatile float u = 0.04;
+template<class T>
+void setup_pwm( uint &n, T &a ) {
     if ( a > 3.1415/6 ) {
-        a -= 3.1415/3 ;
+        a -= 3.1415/3;
         n++;
     }
-    double R1, R2, R3;
+
+    T R1, R2, R3;
 #include "tst.h"
-    cout << a << " " << R1-R2 << " " << R2-R3 << " " << R3-R1 << endl;
-    //cout << a << " " << R1 << " " << R2 << " " << R3 << endl;
-    }
-    return 0;
+    TIM2->CCR1 = ((float)(PWM_FREQ))*(R1*u);
+    TIM2->CCR2 = ((float)(PWM_FREQ))*(R2*u);
+    TIM2->CCR3 = ((float)(PWM_FREQ))*(R3*u);
 }
 

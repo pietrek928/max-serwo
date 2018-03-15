@@ -85,26 +85,33 @@ def var( n, v ):
     print( 'T {} = ({});'.format(n, v) )
 
 def setup_sin( a ):
-    A = 90
-    sc = sqrt(T(3))*T(0.5)
+    # A = 90
     print( 'auto cs = sincos({});'.format( a ) )
-    var( 'sc', sc )
-    var( 'scm', -sc )
-    var( 'ca', scale_var( sqrt(T(3)), 'cs.cos' ) )
-    var( 'sa', 'cs.sin' )
+    var( 'sc', sqrt(T(3)) )
+    var( 'ca', 'cs.cos' )
+    var( 'sa', scale_var( sqrt(T(3)), 'cs.sin' ) )
+    print( '__reswitch:' )
     print( 'switch( n ) {' )
     for n in range( 6 ):
         print( 'case {}:{{'.format( n ) )
         p = n%2
         n //= 2
-        if p:
+        # A = ( -30 if p==1 else 30 )
+        if p ==0:
+            b, c = scale_var(T(2), 'ca'), 'ca+sa'
+        else:
+            b, c = 'ca-sa', scale_var(T(2), 'ca')
+        setup_pwm(['R1', 'R2', 'R3'], -n,
+                [0, b, c ])
+        """if p:
             m, mn = 'scm', 'sc'
             n -= 1
         else:
             m, mn = 'sc', 'scm'
         setup_pwm(['R1', 'R2', 'R3'], n,
-                [0, scale_var(mn, 'sa+ca'), scale_var(m, 'sa-ca') ])
+                [0, scale_var(mn, 'sa+ca'), scale_var(m, 'sa-ca') ]) # """
         print('}break;')
+    print('case 6: n=0; goto __reswitch;')
     print('}')
 
 #gen_mat_mul( 'r', M_3F, [*zip(rot_v(pi/6))] )
